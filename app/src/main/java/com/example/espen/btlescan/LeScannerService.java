@@ -14,8 +14,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 
 public class LeScannerService extends Service {
     private Handler handler;
@@ -48,13 +46,17 @@ public class LeScannerService extends Service {
             new BluetoothAdapter.LeScanCallback() {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
+                    final LeBeacon beacon = new LeBeacon(device, rssi);
+//                    Log.i("Attempting to add beacon: " + beacon.getBtDevice().getAddress(), "RSSI: " + beacon.getRssi());
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            btleDeviceList.addDevice(device);
+//                            btleDeviceList.addDevice(device);
+                            btleDeviceList.addDevice(beacon);
                             btleDeviceList.notifyDataSetChanged();
                         }
                     });
+
                 }
 
             };
@@ -62,7 +64,7 @@ public class LeScannerService extends Service {
 
     public LeScannerService() {
         super();
-        Log.i("CONSTRUCTOR", "Creating service");
+//        Log.i("CONSTRUCTOR", "Creating service");
     }
 
 
@@ -80,7 +82,7 @@ public class LeScannerService extends Service {
         handler = new Handler();
 
         // Set the default sleep interval in ms.
-        sleepPeriod = 5000;
+        sleepPeriod = 2500;
 
         // Set up the bluetoooth adapter through manager
         BluetoothManager btMan = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -108,7 +110,8 @@ public class LeScannerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("ON_START_COMMAND", "Starting?");
+//        Log.i("ON_START_COMMAND", "Starting?");
+        // TODO Evalue sticky vs not sticky....
         return START_NOT_STICKY;
     }
 
@@ -116,12 +119,12 @@ public class LeScannerService extends Service {
         return btleDeviceList.getCount();
     }
 
-    public ArrayList getList () {
+    public ArrayListBeacon getList () {
         return btleDeviceList.getList();
     }
 
     public void scan() {
-        Log.i("LE SERVICE", "scan()");
+//        Log.i("LE SERVICE", "scan()");
         if (!scanning) {
             // Stops scanning after a pre-defined scan period.
             handler.postDelayed(new Runnable() {

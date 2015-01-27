@@ -25,11 +25,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".BtleDeviceScanActivity"
-            android:label="@string/title_activity_btle_device_scan" >
-        </activity>
-
         <service
             android:name=".LeScannerService"
             android:enabled="true"

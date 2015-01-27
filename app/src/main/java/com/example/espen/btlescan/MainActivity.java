@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
     public LeDeviceList btleDeviceList;
     public LeScannerService mService;
     public boolean mBound = false;
+    private Bundle bundleLeDeviceFragment;
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -64,6 +66,8 @@ public class MainActivity extends ActionBarActivity {
         // start the scan schedule
         schedulePeriodicalScan();
 
+        // start the fragmented view schedule
+        scheduleDeviceFragmentView();
 
 
     }
@@ -101,6 +105,17 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+//    @Override
+//    public void onDestroy () {
+//        super.onDestroy();
+//        Log.i("MAIN", "onDestroy()");
+//        if (isFinishing()) {
+//            if (bundleLeDeviceFragment != null)
+//                bundleLeDeviceFragment.clear();
+//            Log.i("MAIN", "onDestroy() - isFinishing");
+//        }
+//    }
+
     public void showBtleDevices (View view) {
 
 //        if (mBound) {
@@ -122,11 +137,40 @@ public class MainActivity extends ActionBarActivity {
         //TODO FIXME, HIGLY EXPERIMAENTAL
         Fragment frag = new LeDeviceListFragment();
         FragmentTransaction tran = getFragmentManager().beginTransaction();
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("List", mService.getList());
-        frag.setArguments(bundle);
+        Bundle bundleLeDeviceFragment = new Bundle();
+        bundleLeDeviceFragment.putParcelableArrayList("List", mService.getList());
+        frag.setArguments(bundleLeDeviceFragment);
         tran.replace(R.id.fragment, frag);
         tran.commit();
+    }
+
+    public void scheduleDeviceFragmentView () {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+
+
+        final Runnable scan = new Runnable() {
+            @Override
+            public void run() {
+                Fragment frag = new LeDeviceListFragment();
+                FragmentTransaction tran = getFragmentManager().beginTransaction();
+                Bundle bundleLeDeviceList = new Bundle();
+                bundleLeDeviceList .putParcelableArrayList("List", mService.getList());
+
+                frag.setArguments(bundleLeDeviceList);
+                tran.replace(R.id.fragment, frag);
+                tran.commit();
+            }
+        };
+
+        final ScheduledFuture scannerHandle = scheduler.scheduleAtFixedRate(scan, 3, 3, TimeUnit.SECONDS);
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                scannerHandle.cancel(false);
+            }
+        }, 60 * 60, TimeUnit.SECONDS);
+
     }
 
     // Schedules periodical BTLE scan
@@ -139,7 +183,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        final ScheduledFuture scannerHandle = scheduler.scheduleAtFixedRate(scan, 5, 10, TimeUnit.SECONDS);
+        final ScheduledFuture scannerHandle = scheduler.scheduleAtFixedRate(scan, 3, 3, TimeUnit.SECONDS);
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {

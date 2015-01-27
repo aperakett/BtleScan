@@ -10,6 +10,7 @@
     <item name="le_list" type="id">LE device list</item>
     <item name="le_addr" type="id">beacon_addr</item>
     <item name="le_name" type="id">beacon_name</item>
+    <item name="le_rssi" type="id">beacon_signal_strength</item>
 
 
 </resources>
