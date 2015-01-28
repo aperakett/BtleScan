@@ -4,6 +4,8 @@ import android.app.ListActivity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,23 +18,31 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 
-public class LeDeviceListActivity extends ListActivity {
+public class LeDeviceListActivity extends ActionBarActivity {
 //    public class LeDeviceListActivity extends ListActivity {
     private LeDeviceListAdapter leDeviceListAdapter;
+    private LeScannerService mService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        savedInstanceState = getIntent().getBundleExtra("bundle");
 
-        ArrayList list = ((ArrayList) getIntent().getParcelableArrayListExtra("List"));
+        if (savedInstanceState == null)
+            Log.i("NEIÅNEIÅNEI", "Bah....");
 
-        leDeviceListAdapter = new LeDeviceListAdapter();
-        //leDeviceListAdapter.setList(list);
-        this.leDeviceListAdapter.btleDevices = list;
+        IBinder iBinder = savedInstanceState.getBinder("scanner");
+        LeScannerService.LocalBinder binder = (LeScannerService.LocalBinder) iBinder;
 
-        Log.i("CREATING LIST", String.valueOf( leDeviceListAdapter.getCount() ) + " / " + String.valueOf(list.size()));
+        mService = binder.getService();
 
-        setListAdapter(leDeviceListAdapter);
+        Log.i("BLABLABLA", String.valueOf(mService.getNumberOfDevices()));
+
+
+//        leDeviceListAdapter = new LeDeviceListAdapter();
+//        leDeviceListAdapter.setList(list);
+//        this.leDeviceListAdapter.btleDevices = list;
+
 
     }
 
@@ -42,8 +52,6 @@ public class LeDeviceListActivity extends ListActivity {
         getMenuInflater().inflate(R.menu.menu_le_device_list, menu);
         Log.i("CREATING LE DEVICE ACTIVITY", "onCreateOptionsMenu");
 
-//        ArrayList list = ((ArrayList) getIntent().getExtras().get("List"));
-//        btleDeviceList.setList(list);
         return true;
     }
 
@@ -65,7 +73,7 @@ public class LeDeviceListActivity extends ListActivity {
     }
 
     class LeDeviceListAdapter extends com.example.espen.btlescan.LeDeviceList {
-        private ArrayList<BluetoothDevice> btleDevices;
+        private ArrayListBeacon btleDevices;
         private LayoutInflater inflater;
 
         // Constructor
@@ -75,11 +83,6 @@ public class LeDeviceListActivity extends ListActivity {
             inflater = LeDeviceListActivity.this.getLayoutInflater();
 
         }
-
-//        @Override
-//        public void setList (ArrayList<BluetoothDevice> list) {
-//            this.btleDevices = list;
-//        }
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
@@ -97,8 +100,8 @@ public class LeDeviceListActivity extends ListActivity {
                 viewHolder = (ViewHolder) view.getTag();
             }
 
-            BluetoothDevice device = btleDevices.get(i);
-            final String deviceName = device.getName();
+            LeBeacon device = btleDevices.get(i);
+            final String deviceName = device.getBtDevice().getName();
 
             if (deviceName != null && deviceName.length() > 0) {
                 viewHolder.deviceName.setText(deviceName);
@@ -106,7 +109,7 @@ public class LeDeviceListActivity extends ListActivity {
             else {
                 viewHolder.deviceName.setText(R.string.unknown_device);
             }
-            viewHolder.deviceAddress.setText(device.getAddress());
+            viewHolder.deviceAddress.setText(device.getBtDevice().getAddress());
             return view;
         }
     }

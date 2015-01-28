@@ -41,6 +41,10 @@ public class LeScannerService extends Service {
         return mBinder;
     }
 
+    public IBinder getBinder () {
+        return mBinder;
+    }
+
     // TODO: implement new class to store RSSI and pherhaps scanrecord
     private BluetoothAdapter.LeScanCallback btleScanCallback =
             new BluetoothAdapter.LeScanCallback() {

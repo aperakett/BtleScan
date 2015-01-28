@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.IBinder;
 import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -84,12 +85,24 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
         super.onAttach(activity);
 
         bundle = this.getArguments();
-        ArrayListBeacon list = ((ArrayListBeacon) bundle.getParcelableArrayList("List"));
+//        bundle = activity.getIntent().getExtras();
 
+        if (bundle == null)
+            Log.i("DOHDOHDOH", "binder == null.....");
+        //ArrayListBeacon list = ((ArrayListBeacon) bundle.getParcelableArrayList("List"));
+        IBinder iBinder = bundle.getBinder("scanner");
+
+
+        LeScannerService.LocalBinder binder = (LeScannerService.LocalBinder) iBinder;
+
+        LeScannerService mService = binder.getService();
+
+
+        ArrayListBeacon list = mService.getList();
         leDeviceListAdapter = new LeDeviceListAdapter();
-        leDeviceListAdapter.btleDevices = list;
+        //leDeviceListAdapter.btleDevices = list;
         leDeviceListAdapter.setList(list);
-        bundle.clear();
+        //bundle.clear();
 //        Log.i("FRAGMENT", "List size: " + String.valueOf(list.size()));
 //        Log.i("FRAGMENT", "List size: " + String.valueOf(leDeviceListAdapter.getCount()));
     }
@@ -117,7 +130,7 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Toast.makeText(parent.getContext(), leDeviceListAdapter.btleDevices.get(position).getBtDevice().getName() + " - " + leDeviceListAdapter.btleDevices.get(position).getBtDevice().getAddress(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(parent.getContext(), leDeviceListAdapter.getItem(position).getBtDevice().getName() + " - " + leDeviceListAdapter.getItem(position).getBtDevice().getAddress(), Toast.LENGTH_SHORT).show();
 
         registerForContextMenu(view);
 
@@ -164,13 +177,13 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
     }
 
     class LeDeviceListAdapter extends com.example.espen.btlescan.LeDeviceList {
-        private ArrayList<LeBeacon> btleDevices;
+//        private ArrayListBeacon btleDevices;
         private LayoutInflater inflater;
 
         // Constructor
         public LeDeviceListAdapter() {
             super();
-            btleDevices = new ArrayList<LeBeacon>();
+//            btleDevices = new ArrayListBeacon();
             inflater = getActivity().getLayoutInflater();
 
         }
@@ -189,7 +202,8 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
                 viewHolder = (ViewHolder) view.getTag();
             }
 
-            LeBeacon beacon = btleDevices.get(i);
+//            LeBeacon beacon = btleDevices.get(i);
+            LeBeacon beacon = this.getItem(i);// btleDevices.get(i);//
             BluetoothDevice device = beacon.getBtDevice();
             final String deviceName = device.getName();
 

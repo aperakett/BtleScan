@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -117,11 +118,17 @@ public class MainActivity extends ActionBarActivity {
 //    }
 
     public void showBtleDevices (View view) {
+//        IBinder b = mService.getIBinder();
+//        LeScannerService.LocalBinder bi = (LeScannerService.LocalBinder) b;
+//        LeScannerService lss = bi.getService();
 
-//        if (mBound) {
-            int num = mService.getNumberOfDevices();
-            Toast.makeText(this, "Devices discovered: " + String.valueOf(num), Toast.LENGTH_SHORT).show();
-//        }
+        // This uses the service
+        Intent intent = new Intent(this, LeDeviceListActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putBinder("scanner", mService.getBinder());
+        intent.putExtra("bundle", bundle);
+        startActivity(intent);
+
     }
 
     public void updateDeviceList (View view) {
@@ -137,7 +144,7 @@ public class MainActivity extends ActionBarActivity {
         //TODO FIXME, HIGLY EXPERIMAENTAL
         Fragment frag = new LeDeviceListFragment();
         FragmentTransaction tran = getFragmentManager().beginTransaction();
-        Bundle bundleLeDeviceFragment = new Bundle();
+        bundleLeDeviceFragment = new Bundle();
         bundleLeDeviceFragment.putParcelableArrayList("List", mService.getList());
         frag.setArguments(bundleLeDeviceFragment);
         tran.replace(R.id.fragment, frag);
@@ -155,7 +162,8 @@ public class MainActivity extends ActionBarActivity {
                 Fragment frag = new LeDeviceListFragment();
                 FragmentTransaction tran = getFragmentManager().beginTransaction();
                 Bundle bundleLeDeviceList = new Bundle();
-                bundleLeDeviceList .putParcelableArrayList("List", mService.getList());
+                //bundleLeDeviceList .putParcelableArrayList("List", mService.getList());
+                bundleLeDeviceList.putBinder("scanner", mService.getBinder());
 
                 frag.setArguments(bundleLeDeviceList);
                 tran.replace(R.id.fragment, frag);

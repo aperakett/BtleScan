@@ -12,7 +12,6 @@ import android.widget.BaseAdapter;
 public class LeDeviceList extends BaseAdapter {
 //    private ArrayList<BluetoothDevice> btleDevices;
     private ArrayListBeacon btleDevices;
-
     private LayoutInflater inflater;
 
     // Constructor
@@ -58,7 +57,7 @@ public class LeDeviceList extends BaseAdapter {
     }
 
     public void setList (ArrayListBeacon list) {
-       this.btleDevices = list;
+        btleDevices = list;
     }
 
     public ArrayListBeacon getList () {

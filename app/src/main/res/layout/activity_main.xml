@@ -31,7 +31,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show devices"
+        android:text="Start Activity"
         android:background="@android:color/darker_gray"
         android:id="@+id/button2"
         android:onClick="showBtleDevices"
