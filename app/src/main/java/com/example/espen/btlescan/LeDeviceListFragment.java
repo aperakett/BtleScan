@@ -5,23 +5,19 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.IBinder;
-import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.example.espen.btlescan.dummy.DummyContent;
 
-import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -34,8 +30,12 @@ import java.util.ArrayList;
  */
 public class LeDeviceListFragment extends Fragment implements AbsListView.OnItemClickListener {
 
+
+
+
     private OnFragmentInteractionListener mListener;
-    private Bundle bundle;
+    private LeScannerService mService;
+    private View mView;
 
     /**
      * The fragment's ListView/GridView.
@@ -53,25 +53,24 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
      * fragment (e.g. upon screen orientation changes).
      */
     public LeDeviceListFragment() {
-//        Log.i("FRAGMENT", "Constructor");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-//        Log.i("FRAGMENT", "onCreate");
+        Log.i("FRAGMENT", "onCreate");
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        Log.i("FRAGMENT", "onCreateView");
+        Log.i("FRAGMENT", "onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_ledevicelist, container, false);
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(leDeviceListAdapter);
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -81,45 +80,41 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
 
     @Override
     public void onAttach(Activity activity) {
-//        Log.i("FRAGMENT", "onAttach");
+        Log.i("FRAGMENT", "onAttach()");
         super.onAttach(activity);
 
-        bundle = this.getArguments();
-//        bundle = activity.getIntent().getExtras();
+        if (mService == null) {
+            Bundle bundle = getArguments();
+            if (bundle == null) {
+                Log.i("DOHDOHDOH", "bundle == null.....");
+                bundle = activity.getIntent().getExtras();
+                if (bundle == null)
+                    Log.i("DOHDOHDOH", "bundle == null.....again...");
 
-        if (bundle == null)
-            Log.i("DOHDOHDOH", "binder == null.....");
-        //ArrayListBeacon list = ((ArrayListBeacon) bundle.getParcelableArrayList("List"));
-        IBinder iBinder = bundle.getBinder("scanner");
-
-
-        LeScannerService.LocalBinder binder = (LeScannerService.LocalBinder) iBinder;
-
-        LeScannerService mService = binder.getService();
-
-
+            }
+            IBinder iBinder = bundle.getBinder("binder");
+            if (iBinder == null)
+                Log.i("DOHDOHDOH", "binder == null.....");
+            LeScannerService.LocalBinder binder = (LeScannerService.LocalBinder) iBinder;
+            mService = binder.getService();
+        }
         ArrayListBeacon list = mService.getList();
-        leDeviceListAdapter = new LeDeviceListAdapter();
-        //leDeviceListAdapter.btleDevices = list;
-        leDeviceListAdapter.setList(list);
-        //bundle.clear();
-//        Log.i("FRAGMENT", "List size: " + String.valueOf(list.size()));
-//        Log.i("FRAGMENT", "List size: " + String.valueOf(leDeviceListAdapter.getCount()));
+//        leDeviceListAdapter = new LeDeviceListAdapter();
+//        leDeviceListAdapter.setList(list);
+
     }
 
     @Override
     public void onStop () {
         super.onStop();
         Log.i("FRAGMENT", "onStop()");
-        //bundle.clear();
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-//        Log.i("FRAGMENT", "onDetach()");
-        mListener = null;
-
+        Log.i("FRAGMENT", "onDetatch()");
+//        mListener = null;
     }
 
 //    public void onPause () {
@@ -130,13 +125,9 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        Toast.makeText(parent.getContext(), leDeviceListAdapter.getItem(position).getBtDevice().getName() + " - " + leDeviceListAdapter.getItem(position).getBtDevice().getAddress(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(parent.getContext(), leDeviceListAdapter.getItem(position).getBtDevice().getName() + " - " + leDeviceListAdapter.getItem(position).getBtDevice().getAddress(), Toast.LENGTH_SHORT).show();
 
         registerForContextMenu(view);
-
-
-
-
 
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
@@ -144,9 +135,7 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
             mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
 
         }
-
     }
-
 
     /**
      * The default content for this Fragment has a TextView that is shown when
@@ -177,47 +166,43 @@ public class LeDeviceListFragment extends Fragment implements AbsListView.OnItem
     }
 
     class LeDeviceListAdapter extends com.example.espen.btlescan.LeDeviceList {
-//        private ArrayListBeacon btleDevices;
-        private LayoutInflater inflater;
+//        private LayoutInflater inflater;
 
         // Constructor
         public LeDeviceListAdapter() {
             super();
-//            btleDevices = new ArrayListBeacon();
-            inflater = getActivity().getLayoutInflater();
-
+//            inflater = getActivity().getLayoutInflater();
         }
 
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            ViewHolder viewHolder;
-            if (view == null) {
-                view = inflater.inflate(R.layout.fragment_ledevicelist_list, null);
-                viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.le_addr);
-                viewHolder.deviceSignal = (TextView) view.findViewById(R.id.le_rssi);
-                viewHolder.deviceName = (TextView) view.findViewById(R.id.le_name);
-                view.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) view.getTag();
-            }
-
-//            LeBeacon beacon = btleDevices.get(i);
-            LeBeacon beacon = this.getItem(i);// btleDevices.get(i);//
-            BluetoothDevice device = beacon.getBtDevice();
-            final String deviceName = device.getName();
-
-            if (deviceName != null && deviceName.length() > 0) {
-                viewHolder.deviceName.setText(deviceName);
-            }
-            else {
-                viewHolder.deviceName.setText(R.string.unknown_device);
-            }
-            viewHolder.deviceAddress.setText(device.getAddress());
-            viewHolder.deviceSignal.setText(String.valueOf(beacon.getRssi()));
-            return view;
-
-        }
+//        //        @Override
+//        public View getView(int i, View view, ViewGroup viewGroup) {
+//            ViewHolder viewHolder;
+//            if (view == null) {
+//                view = inflater.inflate(R.layout.fragment_ledevicelist_list, null);
+//                mView = view;
+//                viewHolder = new ViewHolder();
+//                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.le_addr);
+//                viewHolder.deviceSignal = (TextView) view.findViewById(R.id.le_rssi);
+//                viewHolder.deviceName = (TextView) view.findViewById(R.id.le_name);
+//                view.setTag(viewHolder);
+//            } else {
+//                viewHolder = (ViewHolder) view.getTag();
+//            }
+//
+//            LeBeacon beacon = this.getItem(i);
+//            BluetoothDevice device = beacon.getBtDevice();
+//            final String deviceName = device.getName();
+//
+//            if (deviceName != null && deviceName.length() > 0) {
+//                viewHolder.deviceName.setText(deviceName);
+//            } else {
+//                viewHolder.deviceName.setText(R.string.unknown_device);
+//            }
+//            viewHolder.deviceAddress.setText(device.getAddress());
+//            viewHolder.deviceSignal.setText(String.valueOf(beacon.getRssi()));
+//            return view;
+//
+//        }
     }
 
     static class ViewHolder {

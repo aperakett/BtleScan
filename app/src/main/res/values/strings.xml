@@ -9,7 +9,7 @@
     <string name="bt_not_supported">BT is not supported!</string>
     <string name="btle_device_scan">BTLE Device Scan</string>
     <string name="unknown_device">UnknownDevice</string>
-    <string name="discovered_beacons">Beacon:</string>
+    <string name="discovered_beacons">Beacons:</string>
     <string name="title_activity_le_scan">LeScanActivity</string>
     <string name="title_activity_btle_show">BtleShow</string>
     <string name="title_activity_le_device_list">LeDeviceListActivity</string>

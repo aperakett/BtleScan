@@ -11,6 +11,8 @@
     <item name="le_addr" type="id">beacon_addr</item>
     <item name="le_name" type="id">beacon_name</item>
     <item name="le_rssi" type="id">beacon_signal_strength</item>
+    <item name="listitem_device" type="id">listitem_device</item>
+
 
 
 </resources>

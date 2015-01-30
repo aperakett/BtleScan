@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.BaseAdapter;
 import android.widget.Toast;
 
 
@@ -19,6 +20,9 @@ public class LeScannerService extends Service {
     private Handler handler;
     private BluetoothAdapter btAdapter;
     private LeDeviceList btleDeviceList;
+
+    //TODO implement as list (mAdapter)
+    private BaseAdapter mAdapter;
     private boolean scanning;
     private int sleepPeriod;
 
@@ -51,13 +55,12 @@ public class LeScannerService extends Service {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi, byte[] scanRecord) {
                     final LeBeacon beacon = new LeBeacon(device, rssi);
-//                    Log.i("Attempting to add beacon: " + beacon.getBtDevice().getAddress(), "RSSI: " + beacon.getRssi());
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-//                            btleDeviceList.addDevice(device);
                             btleDeviceList.addDevice(beacon);
-                            btleDeviceList.notifyDataSetChanged();
+                            if (mAdapter != null)
+                                mAdapter.notifyDataSetChanged();
                         }
                     });
 
@@ -68,9 +71,11 @@ public class LeScannerService extends Service {
 
     public LeScannerService() {
         super();
-//        Log.i("CONSTRUCTOR", "Creating service");
     }
 
+    public void setAdapter (BaseAdapter adapter) {
+        mAdapter = adapter;
+    }
 
     @Override
     public void onCreate () {

@@ -1,15 +1,17 @@
 package com.example.espen.btlescan;
 
+import android.bluetooth.BluetoothDevice;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 /**
  * Storage class for the bluetooth low energy devices
  *
  */
-public class LeDeviceList extends BaseAdapter {
+public class LeDeviceList {//} extends BaseAdapter {
 //    private ArrayList<BluetoothDevice> btleDevices;
     private ArrayListBeacon btleDevices;
     private LayoutInflater inflater;
@@ -17,6 +19,7 @@ public class LeDeviceList extends BaseAdapter {
     // Constructor
     public LeDeviceList() {
         super();
+
         btleDevices = new ArrayListBeacon();
     }
     public LeDeviceList(ArrayListBeacon list) {
@@ -51,24 +54,29 @@ public class LeDeviceList extends BaseAdapter {
         return btleDevices.get(i);
     }
 
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
+//    @Override
+//    public long getItemId(int i) {
+//        return 0;
+//    }
 
     public void setList (ArrayListBeacon list) {
         btleDevices = list;
     }
 
     public ArrayListBeacon getList () {
-        return btleDevices.clone();
+//        return btleDevices.clone();
+        return btleDevices;
     }
 
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        return null;
-    }
+//    public View getView(int i, View view, ViewGroup viewGroup) {
+//        return null;
+//    }
 
 }
+
+
+
+
 
 
 
