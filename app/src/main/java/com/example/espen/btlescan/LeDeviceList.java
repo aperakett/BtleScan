@@ -1,18 +1,14 @@
 package com.example.espen.btlescan;
 
-import android.bluetooth.BluetoothDevice;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
+
 
 /**
  * Storage class for the bluetooth low energy devices
  *
  */
-public class LeDeviceList {//} extends BaseAdapter {
-//    private ArrayList<BluetoothDevice> btleDevices;
+public class LeDeviceList {
     private ArrayListBeacon btleDevices;
     private LayoutInflater inflater;
 
@@ -31,15 +27,26 @@ public class LeDeviceList {//} extends BaseAdapter {
     public void addDevice(LeBeacon beacon) {
         if (!btleDevices.contains(beacon)) {
             btleDevices.add(beacon);
-
-            //Log.i("LE Device list", "Adding device(" + String.valueOf(btleDevices.size()) + "): " + beacon.getBtDevice().getAddress());
-
         }
     }
 
     // Clear the list (purge all devices)
     public void clear() {
-        btleDevices.clear();
+        // iterate beacons in list
+        for (int i = 0; i < btleDevices.size(); i++) {
+            LeBeacon beacon = btleDevices.get(i);
+            //check if the threshold is 0, if so remove the beacon
+            if (beacon.getThreshold() <= 0) {
+                Log.i("Beacon.clear()", "Removing beacon number: " + String.valueOf(i));
+                btleDevices.remove(i);
+                i--;
+            }
+            else {
+                Log.i("Beacon.clear()", "Decreasing counter on beacon: " + String.valueOf(i) + " to " + String.valueOf(beacon.getThreshold()));
+                beacon.decreaseThreshold();
+            }
+        }
+//        btleDevices.clear();
     }
 
     // Returns the number of devices in list
@@ -54,24 +61,13 @@ public class LeDeviceList {//} extends BaseAdapter {
         return btleDevices.get(i);
     }
 
-//    @Override
-//    public long getItemId(int i) {
-//        return 0;
-//    }
-
     public void setList (ArrayListBeacon list) {
         btleDevices = list;
     }
 
     public ArrayListBeacon getList () {
-//        return btleDevices.clone();
         return btleDevices;
     }
-
-//    public View getView(int i, View view, ViewGroup viewGroup) {
-//        return null;
-//    }
-
 }
 
 

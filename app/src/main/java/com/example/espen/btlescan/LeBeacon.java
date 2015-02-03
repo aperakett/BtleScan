@@ -10,10 +10,13 @@ import android.os.Parcelable;
 public class LeBeacon implements Parcelable {
     private BluetoothDevice btDevice;
     private int             rssi;
+    private int             threshold;
+    final private int       initialThreshold = 2;
 
     public LeBeacon (BluetoothDevice device, int signal) {
         this.btDevice = device;
         this.rssi = signal;
+        this.threshold = initialThreshold;
     }
 
     public BluetoothDevice getBtDevice () {
@@ -26,6 +29,18 @@ public class LeBeacon implements Parcelable {
 
     public void putRssi (int strength) {
         this.rssi = strength;
+    }
+
+    public int getThreshold () {
+        return threshold;
+    }
+
+    public void resetThreshold () {
+        threshold = initialThreshold;
+    }
+
+    public void decreaseThreshold () {
+        threshold--;
     }
 
     public void putDevice (BluetoothDevice device) {
@@ -61,35 +76,3 @@ public class LeBeacon implements Parcelable {
         }
     };
 }
-//package com.example.espen.btlescan;
-//
-//import android.bluetooth.BluetoothDevice;
-//
-///**
-// * Classholder for BT devices
-// */
-//public class LeBeacon {
-//    private BluetoothDevice btDevice;
-//    private int             rssi;
-//
-//    public LeBeacon (BluetoothDevice device, int signal) {
-//        this.btDevice = device;
-//        this.rssi = signal;
-//    }
-//
-//    public BluetoothDevice getBtDevice () {
-//        return btDevice;
-//    }
-//
-//    public int getRssi () {
-//        return rssi;
-//    }
-//
-//    public void putRssi (int strength) {
-//        this.rssi = strength;
-//    }
-//
-//    public void putDevice (BluetoothDevice device) {
-//        this.btDevice = device;
-//    }
-//}

@@ -192,7 +192,7 @@ public class MainActivity extends ActionBarActivity {
             }
         };
 
-        final ScheduledFuture scannerHandle = scheduler.scheduleAtFixedRate(scan, 3, 3, TimeUnit.SECONDS);
+        final ScheduledFuture scannerHandle = scheduler.scheduleAtFixedRate(scan, 2500, 2500, TimeUnit.MILLISECONDS);
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {

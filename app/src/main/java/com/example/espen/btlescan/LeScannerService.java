@@ -90,7 +90,7 @@ public class LeScannerService extends Service {
         // create the handler used for timer aborted scanning...
         handler = new Handler();
 
-        // Set the default sleep interval in ms.
+        // Set the default scan interval in ms.
         sleepPeriod = 2500;
 
         // Set up the bluetoooth adapter through manager
@@ -133,7 +133,6 @@ public class LeScannerService extends Service {
     }
 
     public void scan() {
-//        Log.i("LE SERVICE", "scan()");
         if (!scanning) {
             // Stops scanning after a pre-defined scan period.
             handler.postDelayed(new Runnable() {
@@ -145,8 +144,12 @@ public class LeScannerService extends Service {
             }, sleepPeriod);
 
             scanning = true;
+
+            // clear beacons out of range before starting scan
+            btleDeviceList.clear();
             btAdapter.startLeScan(btleScanCallback);
-        } else {
+        }
+        else {
             scanning = false;
             btAdapter.stopLeScan(btleScanCallback);
         }
